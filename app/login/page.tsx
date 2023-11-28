@@ -58,9 +58,7 @@ export default function Login({
   return (
     <div className='flex-1 flex flex-col w-full container'>
       <HeaderAuth />
-      <div className='flex flex-col justify-center'>
-        <LoginForm />
-      </div>
+      <LoginForm />
 
       {/* <form
         className='animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground'

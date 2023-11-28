@@ -42,7 +42,7 @@ export function LoginForm() {
   }
 
   return (
-    <div>
+    <div className='flex flex-col justify-center'>
       <div className='mb-10 flex flex-col gap-2'>
         <h1 className='font-bold text-2xl'>Login</h1>
         <p className='text-secondary'>
