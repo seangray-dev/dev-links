@@ -13,7 +13,7 @@ export const metadata = {
 
 const instrumentSans = Instrument_Sans({
   subsets: ['latin'],
-  weight: ['400', '700'],
+  weight: ['400', '600', '700'],
 });
 
 export default function RootLayout({
