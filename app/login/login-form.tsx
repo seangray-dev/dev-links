@@ -4,6 +4,7 @@ import EmailIcon from '@/assets/images/icon-email.svg';
 import PasswordIcon from '@/assets/images/icon-password.svg';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -49,7 +50,9 @@ export function LoginForm() {
         </p>
       </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className='flex flex-col gap-6 mb-6'>
           <FormField
             control={form.control}
             name='email'
@@ -103,6 +106,12 @@ export function LoginForm() {
           </Button>
         </form>
       </Form>
+      <div className='text-center'>
+        <p className='text-secondary'>Don't have an account?</p>
+        <Link className='text-primary' href={'/create-account'}>
+          Create Account
+        </Link>
+      </div>
     </div>
   );
 }
