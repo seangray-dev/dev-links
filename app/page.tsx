@@ -1,3 +1,4 @@
+import { Header } from '@/components/layout/Header';
 import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
 
@@ -17,5 +18,9 @@ export default async function Index() {
 
   const isSupabaseConnected = canInitSupabaseClient();
 
-  return <div></div>;
+  return (
+    <div className='w-full'>
+      <Header />
+    </div>
+  );
 }
