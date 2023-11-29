@@ -3,14 +3,34 @@
 import PreviewIcon from '@/assets/images/icon-preview-header.svg';
 import LogoLarge from '@/assets/images/logo-devlinks-large.svg';
 import LogoSmall from '@/assets/images/logo-devlinks-small.svg';
+import { createClient } from '@/utils/supabase/client';
 import { CircleUserRound, LinkIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 export const Header = () => {
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const pathname = usePathname();
+  const supabaseClient = createClient();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: user, error } = await supabaseClient.auth.getUser();
+
+      if (error) {
+        console.error('Error fetching user:', error);
+        return;
+      }
+
+      if (user) {
+        setUserEmail(user?.user.email ?? null);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const isActive = (path: string) => {
     return pathname === path;
@@ -67,7 +87,8 @@ export const Header = () => {
               className={`group-hover:text-primary ${
                 isActive('/profile') ? 'text-primary' : 'text-secondary'
               } hidden md:block font-semibold transition-all duration-300`}>
-              Profile Details
+              {/* Profile Details */}
+              {userEmail}
             </p>
           </div>
         </Link>
