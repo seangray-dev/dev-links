@@ -1,26 +1,32 @@
+'use client';
+
 import { Header } from '@/components/layout/Header';
-import { createClient } from '@/utils/supabase/server';
-import { cookies } from 'next/headers';
+import { Links } from '@/components/layout/home/Links';
+import { createClient } from '@/utils/supabase/client';
+import { redirect } from 'next/navigation';
+import { useEffect } from 'react';
+import { LinksProvider } from './contexts/LinksContext';
 
 export default async function Index() {
-  const cookieStore = cookies();
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const user = await supabase.auth.getUser();
 
-  const canInitSupabaseClient = () => {
-    // This function is just for the interactive tutorial.
-    // Feel free to remove it once you have Supabase connected.
-    try {
-      createClient(cookieStore);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  };
+      if (!user) {
+        redirect('/login');
+      }
+    };
 
-  const isSupabaseConnected = canInitSupabaseClient();
+    checkAuth();
+  }, []);
 
   return (
     <div className='w-full'>
-      <Header />
+      <LinksProvider>
+        <Header />
+        <Links />
+      </LinksProvider>
     </div>
   );
 }
