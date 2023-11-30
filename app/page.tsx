@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation';
 import { useEffect } from 'react';
 import { LinksProvider } from './contexts/LinksContext';
 
-export default async function Index() {
+export default function Index() {
   useEffect(() => {
     const checkAuth = async () => {
       const supabase = createClient();
