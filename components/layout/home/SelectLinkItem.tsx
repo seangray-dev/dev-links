@@ -17,6 +17,7 @@ import {
   YoutubeIcon,
 } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -24,7 +25,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Equal, Link } from 'lucide-react';
+import { validatePlatform, validateURL } from '@/utils/formValidation';
+import { Equal, LinkIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export const SelectLinkItem = ({
@@ -34,13 +36,27 @@ export const SelectLinkItem = ({
   id: string;
   index: number;
 }) => {
-  const { removeLinkItem, updateLinkItem, linkItems } = useLinks();
-  const [platform, setPlatform] = useState('');
-  const [url, setUrl] = useState('');
+  // Context
+  const {
+    removeLinkItem,
+    updateLinkItem,
+    setPlatformError,
+    setUrlError,
+    linkItems,
+  } = useLinks();
+
+  // Find the current item in the context
+  const linkItem = linkItems.find((item) => item.id === id);
+
+  // Initialize local state with values from the context
+  const [platform, setPlatform] = useState(linkItem?.platform || '');
+  const [url, setUrl] = useState(linkItem?.url || '');
+
+  // Constants
   const selectItems = [
     { value: 'codepen', label: 'CodePen', IconComponent: CodePenIcon },
     { value: 'codewars', label: 'CodeWars', IconComponent: CodeWarsIcon },
-    { value: 'devto', label: 'Dev.to', IconComponent: DevtoIcon },
+    { value: 'dev.to', label: 'Dev.to', IconComponent: DevtoIcon },
     { value: 'facebook', label: 'Facebook', IconComponent: FacebookIcon },
     {
       value: 'freecodecamp',
@@ -66,6 +82,16 @@ export const SelectLinkItem = ({
     { value: 'youtube', label: 'YouTube', IconComponent: YoutubeIcon },
   ];
 
+  // Dynamic Classes for Label and Input fields
+  const labelClass = (errorKey: 'platformError' | 'urlError') =>
+    `text-xs mb-1 ${linkItem?.[errorKey] ? 'text-destructive' : ''}`;
+
+  const inputClass = (errorKey: 'platformError' | 'urlError') =>
+    `pl-11 bg-white focus:drop-shadow-[0_0_32px_rgba(99,60,255,0.25)] ${
+      linkItem?.[errorKey] ? 'border-destructive' : ''
+    }`;
+
+  // Functions
   useEffect(() => {
     const linkItem = linkItems.find((item) => item.id === id);
     if (linkItem) {
@@ -77,18 +103,25 @@ export const SelectLinkItem = ({
   const handlePlatformChange = (selectedPlatform: string) => {
     setPlatform(selectedPlatform);
     updateLinkItem(id, selectedPlatform, url);
+    // Validate and set errors in the context
+    const error = validatePlatform(selectedPlatform);
+    setPlatformError(id, error);
   };
 
   const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = event.target.value;
     setUrl(newUrl);
     updateLinkItem(id, platform, newUrl);
+    // Validate and set errors in the context
+    const error = validateURL(newUrl, platform);
+    setUrlError(id, error);
   };
 
   const handleRemove = () => {
     removeLinkItem(id);
   };
 
+  // SubComponent
   const IconSelectItem = ({
     value,
     label,
@@ -113,7 +146,7 @@ export const SelectLinkItem = ({
       <div className='flex justify-between items-center text-secondary'>
         <div className='flex gap-2 items-center'>
           <Equal size={20} />
-          <h6 className='font-bold'>Link #{index}</h6>
+          <h6 className='font-bold'>Link #{index + 1}</h6>
         </div>
         <Button onClick={handleRemove} variant={'ghost'}>
           Remove
@@ -121,10 +154,12 @@ export const SelectLinkItem = ({
       </div>
       <div className='flex flex-col gap-3'>
         <div>
-          <p className='text-xs mb-1'>Platform</p>
-          <Select onValueChange={handlePlatformChange}>
+          <Label htmlFor='platform' className={labelClass('platformError')}>
+            Platform
+          </Label>
+          <Select name='platform' onValueChange={handlePlatformChange}>
             <SelectTrigger className='w-full bg-white focus:drop-shadow-[0_0_32px_rgba(99,60,255,0.25)]'>
-              <SelectValue placeholder='Github' />
+              <SelectValue placeholder='Platform' />
             </SelectTrigger>
             <SelectContent>
               {selectItems.map((item) => (
@@ -137,14 +172,30 @@ export const SelectLinkItem = ({
               ))}
             </SelectContent>
           </Select>
+          {linkItem?.platformError && (
+            <div className='text-destructive absolute right-4 bottom-3 text-xs'>
+              {linkItem.platformError}
+            </div>
+          )}
         </div>
         <div className='relative'>
-          <p className='text-xs mb-1'>Link</p>
+          <Label htmlFor='url' className='text-xs mb-1'>
+            Link
+          </Label>
           <Input
+            name='url'
             onChange={handleUrlChange}
             placeholder='e.g. https://www.github.com/'
-            className='bg-white pl-11 focus:drop-shadow-[0_0_32px_rgba(99,60,255,0.25)]'></Input>
-          <Link size={16} className='text-secondary absolute left-3 bottom-3' />
+            className={inputClass('urlError')}></Input>
+          <LinkIcon
+            size={16}
+            className='text-secondary absolute left-3 bottom-3'
+          />
+          {linkItem?.urlError && (
+            <div className='text-destructive absolute right-4 bottom-3 text-xs'>
+              {linkItem.urlError}
+            </div>
+          )}
         </div>
       </div>
     </div>
