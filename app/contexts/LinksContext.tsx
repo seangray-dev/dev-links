@@ -4,6 +4,8 @@ type LinkItem = {
   id: string;
   platform: string;
   url: string;
+  platformError: string;
+  urlError: string;
 };
 
 type LinksContextType = {
@@ -11,6 +13,8 @@ type LinksContextType = {
   addLinkItem: () => void;
   removeLinkItem: (id: string) => void;
   updateLinkItem: (id: string, platform: string, url: string) => void;
+  setPlatformError: (id: string, error: string) => void;
+  setUrlError: (id: string, error: string) => void;
 };
 
 const LinksContext = createContext<LinksContextType | undefined>(undefined);
@@ -31,7 +35,13 @@ export const LinksProvider: React.FC<LinksProviderProps> = ({ children }) => {
   const [linkItems, setLinkItems] = useState<LinkItem[]>([]);
 
   const addLinkItem = () => {
-    const newLink = { id: Date.now().toString(), platform: '', url: '' };
+    const newLink = {
+      id: Date.now().toString(),
+      platform: '',
+      url: '',
+      platformError: '',
+      urlError: '',
+    };
     setLinkItems([...linkItems, newLink]);
   };
 
@@ -47,9 +57,32 @@ export const LinksProvider: React.FC<LinksProviderProps> = ({ children }) => {
     );
   };
 
+  const setPlatformError = (id: string, error: string) => {
+    setLinkItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, platformError: error } : item
+      )
+    );
+  };
+
+  const setUrlError = (id: string, error: string) => {
+    setLinkItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, urlError: error } : item
+      )
+    );
+  };
+
   return (
     <LinksContext.Provider
-      value={{ linkItems, addLinkItem, removeLinkItem, updateLinkItem }}>
+      value={{
+        linkItems,
+        addLinkItem,
+        removeLinkItem,
+        updateLinkItem,
+        setPlatformError,
+        setUrlError,
+      }}>
       {children}
     </LinksContext.Provider>
   );
