@@ -9,15 +9,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 
-interface FormErrors {
+type FormErrors = {
   email: string;
   password: string;
-}
+};
 
-interface FormData {
+type FormData = {
   email: string;
   password: string;
-}
+};
 
 export function LoginForm({
   onSubmit,
